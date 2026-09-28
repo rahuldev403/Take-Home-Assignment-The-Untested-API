@@ -33,4 +33,23 @@ const validateUpdateTask = (body) => {
   return null;
 };
 
-module.exports = { validateCreateTask, validateUpdateTask };
+const MAX_ASSIGNEE_LENGTH = 100;
+
+// assignee: a non-empty name, or null to unassign. The key must be present so an
+// accidentally empty body is rejected rather than silently unassigning.
+const validateAssignTask = (body) => {
+  if (!('assignee' in body)) {
+    return 'assignee is required (a non-empty string, or null to unassign)';
+  }
+  const { assignee } = body;
+  if (assignee === null) return null;
+  if (typeof assignee !== 'string' || assignee.trim() === '') {
+    return 'assignee must be a non-empty string, or null to unassign';
+  }
+  if (assignee.trim().length > MAX_ASSIGNEE_LENGTH) {
+    return `assignee must be at most ${MAX_ASSIGNEE_LENGTH} characters`;
+  }
+  return null;
+};
+
+module.exports = { validateCreateTask, validateUpdateTask, validateAssignTask };
